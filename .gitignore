@@ -9,12 +9,6 @@ venv
 # Package files
 *.jar
 
-# Maven
-target/
-dist/
-temp/*
-logs/*
-result_files/*
 # JetBrains IDE
 .idea/
 
