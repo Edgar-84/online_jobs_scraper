@@ -26,6 +26,7 @@ class JobsScraperMain:
         self.jobs_vacancies_dict: dict = None
         self.excel_status: bool = None
         self.json_status: bool = None
+        self.last_vacancies_status: bool = None
 
     @classmethod
     def __finish_work_scraper(cls):
@@ -33,18 +34,22 @@ class JobsScraperMain:
 
     def __save_result_to_excel(self):
         dt = datetime.now()
+        search_title = self.search_job_title
+        title = search_title if search_title != "" else "Last_vacancies"
         name_file = os.path.join(
             base_settings.result_files_dir,
-            f'{self.search_job_title}_{dt.strftime("%Y-%m-%d_%H-%M-%S")}.xlsx',
+            f'{title}_{dt.strftime("%Y-%m-%d_%H-%M-%S")}.xlsx',
         )
         result = ExcelService.create_excel(save_data=self.jobs_vacancies_dict, name_save=name_file)
         return result
 
     def __save_result_to_json(self):
         dt = datetime.now()
+        search_title = self.search_job_title
+        title = search_title if search_title != "" else "Last_vacancies"
         name_file = os.path.join(
             base_settings.result_files_dir,
-            f'{self.search_job_title}_{dt.strftime("%Y-%m-%d_%H-%M-%S")}.json',
+            f'{title}_{dt.strftime("%Y-%m-%d_%H-%M-%S")}.json',
         )
         BaseFilesService.dump_json(data_object=self.jobs_vacancies_dict, json_name=name_file)
         return True
@@ -124,12 +129,30 @@ class JobsScraperMain:
         return True
 
     @working_time(active=True)
-    def main(self, job_title: str, finish_work_func, excel_status: bool, json_status: bool):
+    def main(self,
+             job_title: str,
+             finish_work_func,
+             excel_status: bool,
+             json_status: bool,
+             last_vacancies_status: bool):
         try:
             print(self.START_WORK_MESSAGE)
+            logger.debug(f"Job title: {job_title}")
+            logger.debug(f"Excel status: {excel_status}")
+            logger.debug(f"Json status: {json_status}")
+            logger.debug(f"Last vacancies status: {last_vacancies_status}")
             self.search_job_title = job_title
             self.excel_status = excel_status
             self.json_status = json_status
+            self.last_vacancies_status = last_vacancies_status
+
+            if self.search_job_title == "" and self.last_vacancies_status is False:
+                logger.warning(f"Catch wrong job title: {self.search_job_title}")
+                print("# You need to write job title!")
+                return None
+
+            if self.last_vacancies_status is True:
+                logger.debug("Start search last vacancies")
 
             if self.validate_site_token() is False:
                 return None

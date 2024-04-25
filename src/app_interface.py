@@ -51,11 +51,23 @@ class AppInterface:
         self.excel_checkbox.pack(anchor=tk.W)
         self.json_checkbox.pack(anchor=tk.W)
 
+        self.last_1000_var = tk.BooleanVar(value=False)
+        self.last_1000_button = tk.Button(checkbox_frame, text="Get last vacancies",
+                                          command=self.perform_last_search)
+        self.last_1000_button.pack(side=tk.TOP, fill=tk.X, padx=5, pady=2)
+
+    def perform_last_search(self):
+        self.last_1000_var.set(True)
+        self.perform_search()
+
     def disable_search_button(self):
         self.search_button.config(state=tk.DISABLED)
+        self.last_1000_button.config(state=tk.DISABLED)
 
     def enable_search_button(self):
         self.search_button.config(state=tk.NORMAL)
+        self.last_1000_button.config(state=tk.NORMAL)
+        self.last_1000_var.set(False)
 
     def clear_text_box(self):
         self.text_box.configure(state='normal')
@@ -66,10 +78,15 @@ class AppInterface:
         user_input = self.entry.get()
         excel_info = self.excel_var.get()
         json_info = self.json_var.get()
+        last_vacancies_info = self.last_1000_var.get()
         self.disable_search_button()
         Thread(
             target=self.scraper_start,
-            args=(user_input, self.enable_search_button, excel_info, json_info),
+            args=(user_input,
+                  self.enable_search_button,
+                  excel_info,
+                  json_info,
+                  last_vacancies_info),
         ).start()
 
     def run(self):
