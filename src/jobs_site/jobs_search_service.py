@@ -145,21 +145,26 @@ class JobsSearchService:
             result_links = []
 
             for number, link in enumerate(vacancies_links):
+                info_client_message = f"# Save information from #{number + 1} job, for page [{page}]"
                 response = BaseRequestsService.repeatedly_get_request(url=link, headers=headers)
 
                 if response is None:
-                    logger.error(f"Mistake getting information from page: {link}")
-                    return None
+                    error_message = f"Mistake getting information from page: {link}"
+                    logger.error(error_message)
+                    result_links.append(error_message)
+                    cls.client_message(info_client_message)
 
                 else:
                     description = ParsingDataService.get_job_description(response.text)
                     if description is None:
-                        logger.error(f"Mistake getting description for: {link}")
-                        return None
+                        error_message = f"Mistake getting description for: {link}"
+                        logger.error(error_message)
+                        result_links.append(error_message)
+                        cls.client_message(info_client_message)
 
                     else:
                         result_links.append(description)
-                        cls.client_message(f"# Save information from #{number + 1} job, for page [{page}]")
+                        cls.client_message(info_client_message)
 
             return result_links
 

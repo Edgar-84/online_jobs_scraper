@@ -16,9 +16,9 @@ class ParsingDataService:
     def __get_count_records(records_data: str):
         """Get count found vacancies"""
 
-        match = re.search(r'(\d+)\s+jobs', records_data)
+        match = re.search(r'(\d{1,3}(?:,\d{3})?)(?=\+?\s+jobs)', records_data)
         if match:
-            number = match.group(1)
+            number = match.group(0).replace(',', '')
             return number
 
         else:

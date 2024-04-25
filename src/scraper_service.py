@@ -35,7 +35,7 @@ class JobsScraperMain:
         dt = datetime.now()
         name_file = os.path.join(
             base_settings.result_files_dir,
-            f'Jobs_{self.search_job_title}_{dt.strftime("%Y-%m-%d_%H-%M-%S")}.xlsx',
+            f'{self.search_job_title}_{dt.strftime("%Y-%m-%d_%H-%M-%S")}.xlsx',
         )
         result = ExcelService.create_excel(save_data=self.jobs_vacancies_dict, name_save=name_file)
         return result
@@ -44,7 +44,7 @@ class JobsScraperMain:
         dt = datetime.now()
         name_file = os.path.join(
             base_settings.result_files_dir,
-            f'Jobs_{self.search_job_title}_{dt.strftime("%Y-%m-%d_%H-%M-%S")}.json',
+            f'{self.search_job_title}_{dt.strftime("%Y-%m-%d_%H-%M-%S")}.json',
         )
         BaseFilesService.dump_json(data_object=self.jobs_vacancies_dict, json_name=name_file)
         return True
